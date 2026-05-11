@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUCI TEAM — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:    #050D1A;
+  --navy2:   #0A1628;
+  --navy3:   #0F1E35;
+  --navy4:   #162440;
+  --cyan:    #00D4FF;
+  --cyan2:   #0099CC;
+  --cyan3:   #006699;
+  --white:   #FFFFFF;
+  --text:    rgba(255,255,255,0.85);
+  --text2:   rgba(255,255,255,0.45);
+  --text3:   rgba(255,255,255,0.22);
+  --border:  rgba(0,212,255,0.10);
+  --border2: rgba(255,255,255,0.06);
+  --success: #34D399;
+  --warning: #FCD34D;
+  --danger:  #FCA5A5;
+  --purple:  #A78BFA;
+  --sb-w:    210px;
+}
+
+html,body{height:100%;background:var(--navy);font-family:'Syne',sans-serif;color:var(--text);overflow:hidden}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);border-radius:4px}
+
+/* ── LAYOUT ── */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ══════════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════════ */
+.sidebar{
+  width:var(--sb-w);background:var(--navy);
+  display:flex;flex-direction:column;flex-shrink:0;
+  border-right:1px solid var(--border);
+  transition:transform 0.3s ease;z-index:100;
+}
+.sb-logo{
+  padding:20px 16px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.sb-logo-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:var(--navy);
+  flex-shrink:0;
+}
+.sb-logo-text{}
+.sb-logo-name{font-size:14px;font-weight:700;color:var(--cyan);letter-spacing:0.5px}
+.sb-logo-sub{font-size:9px;color:var(--text3);margin-top:1px;letter-spacing:0.5px}
+
+.sb-nav{flex:1;padding:10px 8px;display:flex;flex-direction:column;gap:1px;overflow-y:auto}
+.sb-section{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;padding:12px 10px 4px}
+.sb-item{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 10px;border-radius:8px;cursor:pointer;
+  color:var(--text2);font-size:12px;font-weight:500;
+  transition:all 0.18s ease;position:relative;
+  text-decoration:none;
+}
+.sb-item:hover{background:rgba(0,212,255,0.06);color:rgba(255,255,255,0.75);transform:translateX(2px)}
+.sb-item.active{background:rgba(0,212,255,0.12);color:var(--cyan)}
+.sb-item.active::before{
+  content:'';position:absolute;left:0;top:20%;height:60%;
+  width:2.5px;background:var(--cyan);border-radius:0 3px 3px 0;
+}
+.sb-item i{font-size:16px;flex-shrink:0}
+.sb-badge{
+  margin-left:auto;background:rgba(0,212,255,0.18);
+  color:var(--cyan);font-size:9px;padding:2px 7px;border-radius:20px;
+}
+.sb-badge.red{background:rgba(239,68,68,0.18);color:#FCA5A5}
+
+.sb-footer{
+  padding:10px 8px;border-top:1px solid var(--border);
+}
+.sb-user{
+  display:flex;align-items:center;gap:9px;
+  padding:10px;border-radius:8px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border2);
+  cursor:pointer;transition:all 0.18s;
+}
+.sb-user:hover{background:rgba(0,212,255,0.07)}
+.sb-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,var(--cyan),var(--cyan3));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--navy);flex-shrink:0;
+}
+.sb-uname{font-size:12px;font-weight:600;color:var(--text)}
+.sb-urole{font-size:9px;color:var(--cyan);margin-top:1px}
+
+/* ══════════════════════════════════════════════════
+   MAIN
+══════════════════════════════════════════════════ */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#08111F}
+
+/* TOPBAR */
+.topbar{
+  background:var(--navy);border-bottom:1px solid var(--border);
+  padding:0 20px;height:54px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.menu-toggle{
+  display:none;width:32px;height:32px;border-radius:7px;
+  border:1px solid var(--border2);background:transparent;
+  color:var(--text2);cursor:pointer;
+  align-items:center;justify-content:center;
+}
+.menu-toggle i{font-size:18px}
+.page-title{font-size:15px;font-weight:600;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.period-chip{
+  background:rgba(0,212,255,0.1);color:var(--cyan);
+  font-size:11px;padding:5px 12px;border-radius:20px;
+  border:1px solid rgba(0,212,255,0.2);font-weight:500;
+  display:flex;align-items:center;gap:5px;
+}
+.period-chip i{font-size:13px}
+.icon-btn{
+  width:34px;height:34px;border-radius:8px;
+  border:1px solid var(--border2);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text2);transition:all 0.18s;
+  position:relative;
+}
+.icon-btn:hover{background:rgba(0,212,255,0.09);color:var(--cyan);border-color:var(--border)}
+.icon-btn i{font-size:17px}
+.notif-dot{
+  position:absolute;top:6px;right:6px;
+  width:7px;height:7px;border-radius:50%;
+  background:#FF6B6B;border:1.5px solid var(--navy);
+}
+
+/* CONTENT AREA */
+.content-area{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+
+/* PAGE */
+.page{display:none;flex-direction:column;gap:18px;padding:20px;animation:pageIn 0.22s ease}
+.page.active{display:flex}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════════════════
+   COMPONENTS
+══════════════════════════════════════════════════ */
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat-card{
+  background:var(--navy2);border:1px solid var(--border2);
+  border-radius:12px;padding:18px;
+  position:relative;overflow:hidden;
+  transition:all 0.2s ease;cursor:default;
+}
+.stat-card:hover{transform:translateY(-2px);border-color:var(--border)}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--accent,transparent);
+}
+.stat-card.c1{--accent:linear-gradient(90deg,#00D4FF,#0088AA)}
+.stat-card.c2{--accent:linear-gradient(90deg,#A78BFA,#7C3AED)}
+.stat-card.c3{--accent:linear-gradient(90deg,#FCD34D,#F59E0B)}
+.stat-card.c4{--accent:linear-gradient(90deg,#34D399,#059669)}
+.stat-icon{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:12px;font-size:18px;
+}
+.stat-card.c1 .stat-icon{background:rgba(0,212,255,0.12);color:var(--cyan)}
+.stat-card.c2 .stat-icon{background:rgba(167,139,250,0.12);color:var(--purple)}
+.stat-card.c3 .stat-icon{background:rgba(252,211,77,0.12);color:var(--warning)}
+.stat-card.c4 .stat-icon{background:rgba(52,211,153,0.12);color:var(--success)}
+.stat-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:700;color:var(--text)}
+.stat-sub{font-size:10px;color:var(--text3);margin-top:4px}
+
+/* CARD */
+.card{
+  background:var(--navy2);border:1px solid var(--border2);
+  border-radius:12px;overflow:hidden;
+  transition:border-color 0.18s;
+}
+.card:hover{border-color:var(--border)}
+.card-header{
+  padding:14px 18px;display:flex;align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--border2);
+}
+.card-title{
+  font-size:13px;font-weight:600;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.card-title i{font-size:16px;color:var(--cyan)}
+.card-actions{display:flex;gap:6px;align-items:center}
+
+/* BUTTONS */
+.btn{
+  padding:7px 14px;border-radius:8px;
+  border:1px solid var(--border2);background:rgba(255,255,255,0.03);
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:500;
+  color:var(--text2);cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:all 0.18s;
+}
+.btn:hover{background:rgba(0,212,255,0.08);border-color:var(--border);color:var(--cyan)}
+.btn i{font-size:14px}
+.btn-primary{background:rgba(0,212,255,0.15);border-color:rgba(0,212,255,0.3);color:var(--cyan);font-weight:600}
+.btn-primary:hover{background:rgba(0,212,255,0.25)}
+.btn-danger{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.25);color:#FCA5A5}
+.btn-danger:hover{background:rgba(239,68,68,0.2)}
+.btn-warning{background:rgba(252,211,77,0.1);border-color:rgba(252,211,77,0.25);color:var(--warning)}
+.btn-warning:hover{background:rgba(252,211,77,0.2)}
+.btn-success{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.25);color:var(--success)}
+.btn-success:hover{background:rgba(52,211,153,0.2)}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{background:rgba(255,255,255,0.015)}
+th{
+  padding:10px 14px;text-align:left;
+  font-size:10px;font-weight:600;color:var(--text3);
+  text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;
+  border-bottom:1px solid var(--border2);
+}
+td{
+  padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.03);
+  color:var(--text);white-space:nowrap;
+}
+tbody tr{transition:background 0.12s}
+tbody tr:hover{background:rgba(0,212,255,0.03)}
+tbody tr:last-child td{border-bottom:none}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500}
+.badge-gold{background:rgba(0,212,255,0.12);color:var(--cyan)}
+.badge-jasa{background:rgba(167,139,250,0.12);color:var(--purple)}
+.badge-ok{background:rgba(52,211,153,0.12);color:var(--success)}
+.badge-warn{background:rgba(252,211,77,0.12);color:var(--warning)}
+.badge-danger{background:rgba(239,68,68,0.12);color:var(--danger)}
+.badge-gray{background:rgba(255,255,255,0.06);color:var(--text2)}
+
+/* WORKER GRID */
+.worker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;padding:16px}
+.worker-card{
+  background:var(--navy3);border:1px solid var(--border2);
+  border-radius:10px;padding:14px;
+  transition:all 0.2s;cursor:pointer;
+}
+.worker-card:hover{border-color:var(--border);transform:translateY(-1px)}
+.wc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.wc-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--cyan);flex-shrink:0;
+}
+.wc-name{font-size:13px;font-weight:600;color:var(--text)}
+.wc-id{font-size:10px;color:var(--text3);margin-top:2px}
+.wc-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.wc-stat{background:rgba(255,255,255,0.025);border-radius:7px;padding:8px 10px}
+.wc-stat-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px}
+.wc-stat-val{font-size:12px;font-weight:600;color:var(--text)}
+
+/* TUTUP BUKU BANNER */
+.tutup-banner{
+  background:rgba(252,211,77,0.04);
+  border:1px solid rgba(252,211,77,0.18);
+  border-radius:12px;padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.tutup-info{}
+.tutup-title{font-size:13px;font-weight:600;color:var(--warning);margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.tutup-title i{font-size:15px}
+.tutup-desc{font-size:11px;color:rgba(252,211,77,0.5)}
+
+/* NOTIF PANEL */
+.notif-panel{
+  position:fixed;top:54px;right:16px;
+  width:340px;background:var(--navy2);
+  border:1px solid var(--border);border-radius:12px;
+  z-index:200;display:none;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  animation:dropIn 0.2s ease;
+}
+.notif-panel.show{display:block}
+@keyframes dropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.notif-header{
+  padding:14px 16px;border-bottom:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.notif-title{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:7px}
+.notif-title i{font-size:15px;color:var(--cyan)}
+.notif-list{max-height:320px;overflow-y:auto}
+.notif-item{
+  padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.03);
+  cursor:pointer;transition:background 0.12s;
+}
+.notif-item:hover{background:rgba(0,212,255,0.04)}
+.notif-item:last-child{border-bottom:none}
+.notif-item.unread{border-left:2px solid var(--cyan)}
+.notif-item-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px}
+.notif-item-msg{font-size:11px;color:var(--text2);line-height:1.5}
+.notif-item-time{font-size:10px;color:var(--text3);margin-top:5px;font-family:'JetBrains Mono',monospace}
+.notif-empty{padding:24px;text-align:center;color:var(--text3);font-size:12px}
+.notif-footer{padding:10px 16px;border-top:1px solid var(--border2);text-align:center}
+
+/* PIN MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(5,13,26,0.85);
+  z-index:300;display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--navy2);border:1px solid var(--border);
+  border-radius:16px;padding:28px;width:340px;
+  animation:modalIn 0.25s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.modal-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:rgba(252,211,77,0.1);border:1px solid rgba(252,211,77,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:var(--warning);margin-bottom:16px;
+}
+.modal-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px}
+.modal-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+.pin-input{
+  display:flex;gap:8px;justify-content:center;margin-bottom:20px;
+}
+.pin-digit{
+  width:48px;height:54px;border-radius:10px;
+  border:1px solid var(--border2);background:var(--navy3);
+  font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;
+  color:var(--cyan);text-align:center;outline:none;
+  transition:all 0.18s;
+}
+.pin-digit:focus{border-color:rgba(0,212,255,0.4);box-shadow:0 0 0 3px rgba(0,212,255,0.08)}
+.modal-actions{display:flex;gap:8px}
+.modal-actions .btn{flex:1;justify-content:center}
+.pin-error{
+  font-size:11px;color:var(--danger);text-align:center;
+  margin-top:-12px;margin-bottom:12px;display:none;
+}
+.pin-error.show{display:block}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:11px;color:var(--text2);font-weight:500;letter-spacing:0.5px}
+.form-input,.form-select{
+  padding:10px 12px;border-radius:8px;
+  border:1px solid var(--border2);background:var(--navy3);
+  font-family:'Syne',sans-serif;font-size:12px;color:var(--text);
+  outline:none;transition:all 0.18s;width:100%;
+}
+.form-input:focus,.form-select:focus{border-color:rgba(0,212,255,0.35);box-shadow:0 0 0 3px rgba(0,212,255,0.06)}
+.form-select option{background:var(--navy3)}
+.form-actions{padding:0 18px 18px;display:flex;gap:8px;justify-content:flex-end}
+.form-input::placeholder{color:var(--text3)}
+
+/* LOADING */
+.loading-row td{text-align:center;padding:24px;color:var(--text3)}
+.spinner-inline{
+  display:inline-block;width:14px;height:14px;
+  border:2px solid rgba(0,212,255,0.2);border-top-color:var(--cyan);
+  border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:-2px;margin-right:6px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* EMPTY STATE */
+.empty-state{
+  text-align:center;padding:40px 20px;color:var(--text3);
+}
+.empty-state i{font-size:40px;margin-bottom:12px;display:block;opacity:0.3}
+.empty-state p{font-size:13px}
+
+/* MOBILE */
+@media(max-width:768px){
+  :root{--sb-w:210px}
+  .sidebar{
+    position:fixed;left:0;top:0;bottom:0;
+    transform:translateX(-100%);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .menu-toggle{display:flex}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .sb-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,0.5);
+    z-index:99;display:none;
+  }
+  .sb-overlay.show{display:block}
+}
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+}
+
+/* TABS */
+.tab-bar{display:flex;gap:2px;padding:0 18px;border-bottom:1px solid var(--border2);flex-shrink:0;background:var(--navy2)}
+.tab{
+  padding:11px 14px;font-size:12px;color:var(--text3);
+  cursor:pointer;border-bottom:2px solid transparent;
+  margin-bottom:-1px;transition:all 0.18s;font-weight:500;
+}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+
+/* CHECKBOX */
+.cb{
+  width:15px;height:15px;border-radius:4px;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.cb.on{background:rgba(0,212,255,0.18);border:1px solid rgba(0,212,255,0.4)}
+.cb.on i{font-size:10px;color:var(--cyan)}
+.cb.off{border:1.5px solid rgba(255,255,255,0.15)}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.page-header-left{}
+.page-header-title{font-size:18px;font-weight:700;color:var(--text)}
+.page-header-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* REKAP WORKER ROW */
+.rekap-name{font-weight:600;display:flex;align-items:center;gap:8px}
+.rekap-avatar{
+  width:26px;height:26px;border-radius:50%;
+  background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:var(--cyan);flex-shrink:0;
+}
+.positive{color:var(--success);font-weight:600}
+.negative{color:var(--danger);font-weight:600}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px}
+</style>
+</head>
+<body>
+
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+<!-- NOTIF PANEL -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header">
+    <div class="notif-title"><i class="ti ti-bell"></i>Notifikasi</div>
+    <button class="btn" onclick="markAllRead()" style="padding:4px 10px;font-size:10px">Tandai semua</button>
+  </div>
+  <div class="notif-list" id="notifList">
+    <div class="notif-empty"><i class="ti ti-bell-off"></i><br>Belum ada notifikasi</div>
+  </div>
+  <div class="notif-footer">
+    <button class="btn" style="width:100%;justify-content:center;font-size:11px" onclick="showPage('notifikasi')">Lihat semua notifikasi</button>
+  </div>
+</div>
+
+<!-- PIN MODAL -->
+<div class="modal-overlay" id="pinModal">
+  <div class="modal">
+    <div class="modal-icon"><i class="ti ti-lock"></i></div>
+    <div class="modal-title">Konfirmasi Tutup Buku</div>
+    <div class="modal-desc">Masukkan PIN untuk memindahkan semua transaksi ke arsip. Tindakan ini tidak dapat dibatalkan.</div>
+    <div class="pin-input">
+      <input class="pin-digit" type="password" maxlength="1" id="pin1" oninput="pinNext(this,'pin2')">
+      <input class="pin-digit" type="password" maxlength="1" id="pin2" oninput="pinNext(this,'pin3')" onkeydown="pinPrev(event,this,'pin1')">
+      <input class="pin-digit" type="password" maxlength="1" id="pin3" oninput="pinNext(this,'pin4')" onkeydown="pinPrev(event,this,'pin2')">
+      <input class="pin-digit" type="password" maxlength="1" id="pin4" oninput="pinNext(this,null)"  onkeydown="pinPrev(event,this,'pin3')">
+    </div>
+    <div class="pin-error" id="pinError">PIN salah! Coba lagi.</div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closePinModal()">Batal</button>
+      <button class="btn btn-warning" onclick="submitPin()"><i class="ti ti-lock"></i>Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">LT</div>
+      <div class="sb-logo-text">
+        <div class="sb-logo-name">LUCI TEAM</div>
+        <div class="sb-logo-sub">Management System</div>
+      </div>
+    </div>
+
+    <div class="sb-nav">
+      <div class="sb-section">Utama</div>
+      <a class="sb-item active" id="nav-dashboard" onclick="showPage('dashboard')">
+        <i class="ti ti-layout-dashboard"></i>Dashboard
+      </a>
+      <a class="sb-item" id="nav-input-transaksi" onclick="showPage('input-transaksi')">
+        <i class="ti ti-plus"></i>Input Transaksi
+      </a>
+      <a class="sb-item" id="nav-log-transaksi" onclick="showPage('log-transaksi')">
+        <i class="ti ti-list"></i>Log Transaksi
+      </a>
+
+      <div class="sb-section">Keuangan</div>
+      <a class="sb-item" id="nav-rekap" onclick="showPage('rekap')">
+        <i class="ti ti-chart-bar"></i>Rekap Mingguan
+      </a>
+      <a class="sb-item" id="nav-slip-gaji" onclick="showPage('slip-gaji')">
+        <i class="ti ti-receipt"></i>Slip Gaji
+      </a>
+      <a class="sb-item" id="nav-kasbon" onclick="showPage('kasbon')">
+        <i class="ti ti-credit-card"></i>Kasbon
+      </a>
+
+      <div class="sb-section">Manajemen</div>
+      <a class="sb-item" id="nav-workers" onclick="showPage('workers')">
+        <i class="ti ti-users"></i>Worker
+        <span class="sb-badge" id="workerCount">—</span>
+      </a>
+      <a class="sb-item" id="nav-log-kantor" onclick="showPage('log-kantor')">
+        <i class="ti ti-building"></i>Log Kantor
+      </a>
+      <a class="sb-item" id="nav-arsip" onclick="showPage('arsip')">
+        <i class="ti ti-archive"></i>Arsip
+      </a>
+      <a class="sb-item" id="nav-notifikasi" onclick="showPage('notifikasi')">
+        <i class="ti ti-bell"></i>Notifikasi
+        <span class="sb-badge red" id="notifCount" style="display:none">0</span>
+      </a>
+
+      <div class="sb-section" id="adminSection"></div>
+      <a class="sb-item" id="nav-settings" onclick="showPage('settings')" style="display:none">
+        <i class="ti ti-settings"></i>Advanced Settings
+      </a>
+    </div>
+
+    <div class="sb-footer">
+      <div class="sb-user" onclick="logout()">
+        <div class="sb-avatar" id="userAvatar">?</div>
+        <div>
+          <div class="sb-uname" id="userName">Loading...</div>
+          <div class="sb-urole" id="userRole">—</div>
+        </div>
+        <i class="ti ti-logout" style="font-size:15px;color:var(--text3);margin-left:auto"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+        <div class="page-title" id="pageTitle">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="period-chip"><i class="ti ti-calendar"></i><span id="periodLabel">Minggu Aktif</span></div>
+        <div class="icon-btn" onclick="toggleNotif()" id="notifBtn">
+          <i class="ti ti-bell"></i>
+          <div class="notif-dot" id="notifDot" style="display:none"></div>
+        </div>
+        <div class="icon-btn" onclick="refreshData()" title="Refresh data">
+          <i class="ti ti-refresh" id="refreshIcon"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- ═══════════════════════════════
+           PAGE: DASHBOARD
+      ═══════════════════════════════ -->
+      <div class="page active" id="page-dashboard">
+
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Dashboard</div>
+            <div class="page-header-sub" id="dashDate">Memuat data...</div>
+          </div>
+          <button class="btn btn-primary" onclick="refreshData()"><i class="ti ti-refresh"></i>Refresh</button>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stat-grid">
+          <div class="stat-card c1">
+            <div class="stat-icon"><i class="ti ti-trending-up"></i></div>
+            <div class="stat-label">Total IN Minggu Ini</div>
+            <div class="stat-value" id="statTotalIN">Rp0</div>
+            <div class="stat-sub" id="statTrxCount">0 transaksi</div>
+          </div>
+          <div class="stat-card c2">
+            <div class="stat-icon"><i class="ti ti-building"></i></div>
+            <div class="stat-label">Kantor 20%</div>
+            <div class="stat-value" id="statKantor">Rp0</div>
+            <div class="stat-sub">Kas operasional</div>
+          </div>
+          <div class="stat-card c3">
+            <div class="stat-icon"><i class="ti ti-crown"></i></div>
+            <div class="stat-label">Laba 30%</div>
+            <div class="stat-value" id="statLaba">Rp0</div>
+            <div class="stat-sub">Owner + Co-owner</div>
+          </div>
+          <div class="stat-card c4">
+            <div class="stat-icon"><i class="ti ti-users"></i></div>
+            <div class="stat-label">Worker 50%</div>
+            <div class="stat-value" id="statWorker">Rp0</div>
+            <div class="stat-sub" id="statWorkerCount">0 worker aktif</div>
+          </div>
+        </div>
+
+        <!-- Worker Performance -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-users"></i>Performa Worker — Minggu Ini</div>
+            <div class="card-actions">
+              <button class="btn" onclick="showPage('rekap')"><i class="ti ti-chart-bar"></i>Rekap Lengkap</button>
+            </div>
+          </div>
+          <div class="worker-grid" id="workerGrid">
+            <div class="empty-state" style="grid-column:1/-1">
+              <i class="ti ti-loader" style="animation:spin 1s linear infinite"></i>
+              <p>Memuat data worker...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transaksi Terbaru -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-list"></i>Transaksi Terbaru</div>
+            <button class="btn" onclick="showPage('log-transaksi')"><i class="ti ti-arrow-right"></i>Lihat Semua</button>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>Kode</th><th>Tanggal</th><th>Worker</th><th>Perihal</th>
+                <th style="text-align:right">Total</th><th>Bayar</th>
+              </tr></thead>
+              <tbody id="recentTrxBody">
+                <tr class="loading-row"><td colspan="6"><span class="spinner-inline"></span>Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tutup Buku -->
+        <div class="tutup-banner">
+          <div class="tutup-info">
+            <div class="tutup-title"><i class="ti ti-lock"></i>Tutup Buku</div>
+            <div class="tutup-desc">Pindahkan semua data transaksi ke arsip dan mulai periode baru. Diperlukan PIN konfirmasi.</div>
+          </div>
+          <button class="btn btn-warning" onclick="openPinModal()"><i class="ti ti-lock"></i>Tutup Buku</button>
+        </div>
+
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: INPUT TRANSAKSI
+      ═══════════════════════════════ -->
+      <div class="page" id="page-input-transaksi">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Input Transaksi</div>
+            <div class="page-header-sub">Tambah transaksi baru ke periode aktif</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-plus"></i>Form Transaksi Baru</div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Tanggal</label>
+              <input type="date" class="form-input" id="trx-tanggal">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nama Worker</label>
+              <select class="form-select" id="trx-worker">
+                <option value="">Pilih Worker...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Perihal</label>
+              <select class="form-select" id="trx-perihal">
+                <option value="">Pilih Perihal...</option>
+                <option value="GOLD">GOLD</option>
+                <option value="JASA">JASA</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quantity <span style="color:var(--text3)">(kosongkan jika JASA)</span></label>
+              <input type="number" class="form-input" id="trx-qty" placeholder="0" min="0" oninput="hitungTotal()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Rate (Rp)</label>
+              <input type="number" class="form-input" id="trx-rate" placeholder="0" min="0" oninput="hitungTotal()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Total (Rp) — Auto Hitung</label>
+              <input type="number" class="form-input" id="trx-total" placeholder="0" readonly style="background:rgba(0,212,255,0.04);color:var(--cyan);font-weight:600">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Keterangan <span style="color:var(--text3)">(opsional)</span></label>
+              <input type="text" class="form-input" id="trx-ket" placeholder="Catatan tambahan...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dicatat Oleh</label>
+              <select class="form-select" id="trx-oleh">
+                <option value="">Pilih Admin...</option>
+                <option value="Abagja">Abagja</option>
+                <option value="Aldia">Aldia</option>
+              </select>
+            </div>
+            <div class="form-group" style="align-self:end">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--navy3)">
+                <input type="checkbox" id="trx-bayar" style="accent-color:var(--cyan);width:14px;height:14px">
+                <span style="font-size:12px;color:var(--text2)">Uang sudah masuk ke rekening ✓</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" onclick="resetFormTrx()"><i class="ti ti-x"></i>Reset</button>
+            <button class="btn btn-primary" onclick="submitTransaksi()"><i class="ti ti-check"></i>Simpan Transaksi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: LOG TRANSAKSI
+      ═══════════════════════════════ -->
+      <div class="page" id="page-log-transaksi">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Log Transaksi</div>
+            <div class="page-header-sub">Semua transaksi periode aktif</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <select class="form-select" id="filterWorker" onchange="filterTransaksi()" style="width:140px">
+              <option value="">Semua Worker</option>
+            </select>
+            <select class="form-select" id="filterPerihal" onchange="filterTransaksi()" style="width:120px">
+              <option value="">Semua Perihal</option>
+              <option value="GOLD">GOLD</option>
+              <option value="JASA">JASA</option>
+            </select>
+            <button class="btn btn-primary" onclick="showPage('input-transaksi')"><i class="ti ti-plus"></i>Input Baru</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>Kode</th><th>Tanggal</th><th>Worker</th><th>Perihal</th>
+                <th style="text-align:right">Qty</th><th style="text-align:right">Rate</th>
+                <th style="text-align:right">Total</th><th>Keterangan</th>
+                <th style="text-align:center">Bayar</th><th>Dicatat</th><th>Aksi</th>
+              </tr></thead>
+              <tbody id="logTrxBody">
+                <tr class="loading-row"><td colspan="11"><span class="spinner-inline"></span>Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:12px 16px;border-top:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:11px;color:var(--text3)" id="trxCount">— transaksi</span>
+            <span style="font-size:11px;color:var(--text3)">Total: <span class="mono positive" id="trxTotal">Rp0</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: REKAP MINGGUAN
+      ═══════════════════════════════ -->
+      <div class="page" id="page-rekap">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Rekap Mingguan</div>
+            <div class="page-header-sub">Kalkulasi gaji otomatis dari data transaksi</div>
+          </div>
+          <button class="btn btn-success" onclick="showPage('slip-gaji')"><i class="ti ti-receipt"></i>Generate Slip Gaji</button>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card c1">
+            <div class="stat-icon"><i class="ti ti-trending-up"></i></div>
+            <div class="stat-label">Total IN</div>
+            <div class="stat-value" id="rekapTotalIN">Rp0</div>
+          </div>
+          <div class="stat-card c2">
+            <div class="stat-icon"><i class="ti ti-building"></i></div>
+            <div class="stat-label">Kantor 20%</div>
+            <div class="stat-value" id="rekapKantor">Rp0</div>
+          </div>
+          <div class="stat-card c3">
+            <div class="stat-icon"><i class="ti ti-crown"></i></div>
+            <div class="stat-label">Laba 30%</div>
+            <div class="stat-value" id="rekapLaba">Rp0</div>
+          </div>
+          <div class="stat-card c4">
+            <div class="stat-icon"><i class="ti ti-users"></i></div>
+            <div class="stat-label">Worker 50%</div>
+            <div class="stat-value" id="rekapWorker">Rp0</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-receipt"></i>Rekap Gaji per Worker</div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>Worker</th>
+                <th style="text-align:right">Total Transaksi</th>
+                <th style="text-align:right">Gaji Kotor 50%</th>
+                <th style="text-align:right">Kasbon</th>
+                <th style="text-align:right">Gaji Bersih</th>
+                <th>Status Kirim</th>
+                <th>Aksi</th>
+              </tr></thead>
+              <tbody id="rekapBody">
+                <tr class="loading-row"><td colspan="7"><span class="spinner-inline"></span>Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: KASBON
+      ═══════════════════════════════ -->
+      <div class="page" id="page-kasbon">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Kasbon</div>
+            <div class="page-header-sub">Manajemen kasbon worker</div>
+          </div>
+          <button class="btn btn-primary" onclick="showAddKasbon()"><i class="ti ti-plus"></i>Tambah Kasbon</button>
+        </div>
+
+        <div class="card" id="addKasbonForm" style="display:none">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-plus"></i>Tambah Kasbon Baru</div>
+            <button class="btn" onclick="hideAddKasbon()"><i class="ti ti-x"></i></button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nama Worker</label>
+              <select class="form-select" id="kb-worker"><option value="">Pilih Worker...</option></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Jumlah (Rp)</label>
+              <input type="number" class="form-input" id="kb-jumlah" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tanggal</label>
+              <input type="date" class="form-input" id="kb-tanggal">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dicatat Oleh</label>
+              <select class="form-select" id="kb-oleh">
+                <option value="Abagja">Abagja</option>
+                <option value="Aldia">Aldia</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Keterangan</label>
+              <input type="text" class="form-input" id="kb-ket" placeholder="Alasan kasbon...">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" onclick="hideAddKasbon()">Batal</button>
+            <button class="btn btn-primary" onclick="submitKasbon()"><i class="ti ti-check"></i>Simpan</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>ID</th><th>Worker</th><th style="text-align:right">Jumlah</th>
+                <th>Tanggal</th><th>Keterangan</th><th>Status</th>
+                <th>Periode Potong</th><th style="text-align:right">Sisa</th><th>Dicatat</th>
+              </tr></thead>
+              <tbody id="kasbonBody">
+                <tr class="loading-row"><td colspan="9"><span class="spinner-inline"></span>Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: WORKERS
+      ═══════════════════════════════ -->
+      <div class="page" id="page-workers">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Manajemen Worker</div>
+            <div class="page-header-sub">Data semua worker aktif</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>ID</th><th>Nama</th><th>Nomor WA</th><th>Username</th>
+                <th>Status</th><th style="text-align:right">Kasbon Aktif</th>
+                <th>Tgl Bergabung</th><th>Aksi</th>
+              </tr></thead>
+              <tbody id="workersBody">
+                <tr class="loading-row"><td colspan="8"><span class="spinner-inline"></span>Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: LOG KANTOR
+      ═══════════════════════════════ -->
+      <div class="page" id="page-log-kantor">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Log Kantor</div>
+            <div class="page-header-sub">Pengeluaran operasional kantor</div>
+          </div>
+          <button class="btn btn-primary" onclick="showAddLogKantor()"><i class="ti ti-plus"></i>Tambah Pengeluaran</button>
+        </div>
+
+        <div class="card" id="addLogKantorForm" style="display:none">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-plus"></i>Tambah Pengeluaran</div>
+            <button class="btn" onclick="hideAddLogKantor()"><i class="ti ti-x"></i></button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Tanggal</label>
+              <input type="date" class="form-input" id="lk-tanggal">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Kategori</label>
+              <select class="form-select" id="lk-kategori">
+                <option value="">Pilih Kategori...</option>
+                <option>Listrik</option><option>Internet</option><option>Sewa</option>
+                <option>Gaji Admin</option><option>Pembelian Peralatan</option>
+                <option>Operasional Lain</option><option>Lainnya</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Jumlah (Rp)</label>
+              <input type="number" class="form-input" id="lk-jumlah" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bukti/Nota</label>
+              <select class="form-select" id="lk-bukti">
+                <option value="Ada">Ada</option>
+                <option value="Tidak Ada">Tidak Ada</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dicatat Oleh</label>
+              <select class="form-select" id="lk-oleh">
+                <option value="Abagja">Abagja</option>
+                <option value="Aldia">Aldia</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Keterangan</label>
+              <input type="text" class="form-input" id="lk-ket" placeholder="Detail pengeluaran...">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn" onclick="hideAddLogKantor()">Batal</button>
+            <button class="btn btn-primary" onclick="submitLogKantor()"><i class="ti ti-check"></i>Simpan</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>ID</th><th>Tanggal</th><th>Kategori</th>
+                <th style="text-align:right">Jumlah</th><th>Keterangan</th>
+                <th>Bukti</th><th>Dicatat</th>
+              </tr></thead>
+              <tbody id="logKantorBody">
+                <tr class="loading-row"><td colspan="7"><span class="spinner-inline"></span>Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: ARSIP
+      ═══════════════════════════════ -->
+      <div class="page" id="page-arsip">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Arsip</div>
+            <div class="page-header-sub">Riwayat semua periode tutup buku</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>Periode</th><th>Tgl Tutup Buku</th>
+                <th style="text-align:right">Total IN</th>
+                <th style="text-align:right">Kantor 20%</th>
+                <th style="text-align:right">Laba 30%</th>
+                <th style="text-align:right">Worker 50%</th>
+                <th style="text-align:center">Jml Trx</th>
+                <th>Ditutup Oleh</th>
+              </tr></thead>
+              <tbody id="arsipBody">
+                <tr class="loading-row"><td colspan="8"><span class="spinner-inline"></span>Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: NOTIFIKASI
+      ═══════════════════════════════ -->
+      <div class="page" id="page-notifikasi">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Notifikasi</div>
+            <div class="page-header-sub">Semua notifikasi sistem tersimpan di sini</div>
+          </div>
+          <button class="btn" onclick="markAllRead()"><i class="ti ti-checks"></i>Tandai Semua Dibaca</button>
+        </div>
+        <div class="card" id="notifFullList">
+          <div class="notif-empty"><i class="ti ti-bell-off"></i><p>Belum ada notifikasi</p></div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: SLIP GAJI
+      ═══════════════════════════════ -->
+      <div class="page" id="page-slip-gaji">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Slip Gaji</div>
+            <div class="page-header-sub">Generate dan kirim slip gaji ke worker</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>Worker</th><th>Email</th>
+                <th style="text-align:right">Gaji Bersih</th>
+                <th>Status</th><th>Aksi</th>
+              </tr></thead>
+              <tbody id="slipBody">
+                <tr class="loading-row"><td colspan="5"><span class="spinner-inline"></span>Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           PAGE: SETTINGS
+      ═══════════════════════════════ -->
+      <div class="page" id="page-settings">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-header-title">Advanced Settings</div>
+            <div class="page-header-sub">Pengaturan sistem — hanya Super Admin</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><i class="ti ti-lock"></i>Pengaturan PIN</div></div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">PIN Tutup Buku Saat Ini</label>
+              <input type="password" class="form-input" id="pinLama" placeholder="PIN lama">
+            </div>
+            <div class="form-group">
+              <label class="form-label">PIN Baru</label>
+              <input type="password" class="form-input" id="pinBaru" placeholder="PIN baru (4 digit)">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="gantiPIN()"><i class="ti ti-check"></i>Ganti PIN</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- content-area -->
+  </div><!-- main -->
+</div><!-- app -->
+
+<!-- FIREBASE SDK -->
+<script type="module">
+import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore, collection, doc,
+  getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc,
+  query, orderBy, limit, onSnapshot, where, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyBrlbK6F9cCVTcW5z3DzTFvFEIYLf6jIzQ",
+  authDomain:        "luci-pendataan.firebaseapp.com",
+  projectId:         "luci-pendataan",
+  storageBucket:     "luci-pendataan.firebasestorage.app",
+  messagingSenderId: "694040300230",
+  appId:             "1:694040300230:web:8070e106d500536e0325c7"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── STATE ──────────────────────────────────────────────────────
+let currentUser     = null;
+let currentRole     = null;
+let allTransaksi    = [];
+let allWorkers      = [];
+let allRekap        = [];
+let allKasbon       = [];
+let allNotif        = [];
+let unsubNotif      = null;
+
+// ── HELPERS ───────────────────────────────────────────────────
+const rp = n => "Rp" + (Number(n)||0).toLocaleString('id-ID');
+const initials = name => name ? name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase() : '?';
+const today = () => new Date().toISOString().split('T')[0];
+const nowStr = () => new Date().toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'});
+
+// ── AUTH CHECK ─────────────────────────────────────────────────
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    window.location.href = "luci-login.html";
+    return;
+  }
+  // Ambil data user dari Firestore
+  try {
+    const userDoc = await getDoc(doc(db,"users",user.uid));
+    if (!userDoc.exists()) { await signOut(auth); window.location.href="luci-login.html"; return; }
+    const data = userDoc.data();
+    currentUser = { uid: user.uid, ...data };
+    currentRole = data.role;
+
+    // Tampilkan info user di sidebar
+    document.getElementById('userName').textContent   = data.nama || data.username;
+    document.getElementById('userRole').textContent   = roleLabel(currentRole);
+    document.getElementById('userAvatar').textContent = initials(data.nama || data.username);
+
+    // Super Admin: tampilkan Advanced Settings
+    if (currentRole === 'superadmin') {
+      document.getElementById('adminSection').textContent = 'Super Admin';
+      document.getElementById('nav-settings').style.display = 'flex';
+    }
+
+    // Set tanggal hari ini di form
+    document.getElementById('trx-tanggal').value = today();
+    document.getElementById('kb-tanggal').value  = today();
+    document.getElementById('lk-tanggal').value  = today();
+
+    // Load semua data
+    await loadAll();
+    listenNotifikasi();
+
+  } catch(e) {
+    console.error(e);
+    alert("Gagal load data: " + e.message);
+  }
+});
+
+function roleLabel(role) {
+  return role==='superadmin'?'Super Admin':role==='admin'?'Admin':'Worker';
+}
+
+// ── LOAD DATA ─────────────────────────────────────────────────
+async function loadAll() {
+  await Promise.all([loadWorkers(), loadTransaksi(), loadRekap(), loadKasbon()]);
+  renderDashboard();
+}
+
+window.refreshData = async function() {
+  const icon = document.getElementById('refreshIcon');
+  icon.style.animation = 'spin 0.7s linear infinite';
+  await loadAll();
+  icon.style.animation = '';
+};
+
+async function loadWorkers() {
+  const snap = await getDocs(collection(db,'workers'));
+  allWorkers = snap.docs.map(d=>({id:d.id,...d.data()}));
+  document.getElementById('workerCount').textContent = allWorkers.length;
+  document.getElementById('statWorkerCount').textContent = allWorkers.length + ' worker aktif';
+
+  // Isi dropdown worker di form
+  const workerOpts = allWorkers.map(w=>`<option value="${w.nama}">${w.nama}</option>`).join('');
+  ['trx-worker','filterWorker','kb-worker'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (!el) return;
+    const def = el.options[0].outerHTML;
+    el.innerHTML = def + workerOpts;
+  });
+
+  renderWorkers();
+}
+
+async function loadTransaksi() {
+  const snap = await getDocs(query(collection(db,'transaksi'), orderBy('tanggal','desc')));
+  allTransaksi = snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderLogTransaksi();
+}
+
+async function loadRekap() {
+  const snap = await getDocs(collection(db,'rekap'));
+  allRekap = snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderRekap();
+  renderSlip();
+}
+
+async function loadKasbon() {
+  const snap = await getDocs(collection(db,'kasbon'));
+  allKasbon = snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderKasbon();
+}
+
+// ── RENDER DASHBOARD ─────────────────────────────────────────
+function renderDashboard() {
+  const totalIN = allRekap.reduce((s,r)=>s+(r.totalTrx||0),0);
+  const kantor  = totalIN * 0.20;
+  const laba    = totalIN * 0.30;
+  const worker  = totalIN * 0.50;
+
+  document.getElementById('statTotalIN').textContent  = rp(totalIN);
+  document.getElementById('statKantor').textContent   = rp(kantor);
+  document.getElementById('statLaba').textContent     = rp(laba);
+  document.getElementById('statWorker').textContent   = rp(worker);
+  document.getElementById('statTrxCount').textContent = allTransaksi.length + ' transaksi';
+  document.getElementById('dashDate').textContent     = 'Update: ' + nowStr();
+
+  // Rekap stat cards
+  document.getElementById('rekapTotalIN').textContent = rp(totalIN);
+  document.getElementById('rekapKantor').textContent  = rp(kantor);
+  document.getElementById('rekapLaba').textContent    = rp(laba);
+  document.getElementById('rekapWorker').textContent  = rp(worker);
+
+  // Worker grid
+  const grid = document.getElementById('workerGrid');
+  if (allRekap.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><i class="ti ti-users"></i><p>Belum ada data rekap worker</p></div>`;
+    return;
+  }
+  grid.innerHTML = allRekap.map(w => {
+    const kasbonTag = w.kasbon > 0
+      ? `<span class="badge badge-warn">Kasbon ${rp(w.kasbon)}</span>`
+      : `<span class="badge badge-ok">Bersih</span>`;
+    return `
+    <div class="worker-card" onclick="showPage('rekap')">
+      <div class="wc-top">
+        <div class="wc-avatar">${initials(w.nama)}</div>
+        <div>
+          <div class="wc-name">${w.nama}</div>
+          <div class="wc-id">${kasbonTag}</div>
+        </div>
+      </div>
+      <div class="wc-stats">
+        <div class="wc-stat">
+          <div class="wc-stat-lbl">Total Transaksi</div>
+          <div class="wc-stat-val">${rp(w.totalTrx)}</div>
+        </div>
+        <div class="wc-stat">
+          <div class="wc-stat-lbl">Gaji Bersih</div>
+          <div class="wc-stat-val" style="color:var(--success)">${rp(w.gajiBersih)}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Transaksi terbaru (5 terakhir)
+  const recent = allTransaksi.slice(0,5);
+  document.getElementById('recentTrxBody').innerHTML = recent.length === 0
+    ? `<tr><td colspan="6" class="empty-state">Belum ada transaksi</td></tr>`
+    : recent.map(t => `
+    <tr>
+      <td class="mono" style="color:var(--cyan)">${t.kode}</td>
+      <td class="mono" style="color:var(--text3);font-size:11px">${t.tanggal}</td>
+      <td style="font-weight:600">${t.nama}</td>
+      <td><span class="badge ${t.perihal==='GOLD'?'badge-gold':'badge-jasa'}">${t.perihal}</span></td>
+      <td style="text-align:right;font-weight:600">${rp(t.total)}</td>
+      <td style="text-align:center">
+        ${t.sudahBayar
+          ? `<span class="cb on"><i class="ti ti-check"></i></span>`
+          : `<span class="cb off"></span>`}
+      </td>
+    </tr>`).join('');
+}
+
+// ── RENDER LOG TRANSAKSI ─────────────────────────────────────
+function renderLogTransaksi(filtered) {
+  const data  = filtered || allTransaksi;
+  const tbody = document.getElementById('logTrxBody');
+  const total = data.reduce((s,t)=>s+(t.total||0),0);
+  document.getElementById('trxCount').textContent = data.length + ' transaksi';
+  document.getElementById('trxTotal').textContent = rp(total);
+
+  if (data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="11"><div class="empty-state"><i class="ti ti-list"></i><p>Belum ada transaksi</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(t => `
+  <tr>
+    <td class="mono" style="color:var(--cyan);font-size:11px">${t.kode}</td>
+    <td class="mono" style="color:var(--text3);font-size:11px">${t.tanggal}</td>
+    <td style="font-weight:600">${t.nama}</td>
+    <td><span class="badge ${t.perihal==='GOLD'?'badge-gold':'badge-jasa'}">${t.perihal}</span></td>
+    <td style="text-align:right">${t.quantity||'—'}</td>
+    <td style="text-align:right" class="mono">${rp(t.rate)}</td>
+    <td style="text-align:right;font-weight:600">${rp(t.total)}</td>
+    <td style="color:var(--text2);font-size:11px">${t.keterangan||'—'}</td>
+    <td style="text-align:center">
+      <span class="cb ${t.sudahBayar?'on':'off'}" onclick="toggleBayar('${t.id}',${t.sudahBayar})" style="cursor:pointer">
+        ${t.sudahBayar?`<i class="ti ti-check"></i>`:''}
+      </span>
+    </td>
+    <td style="color:var(--text2);font-size:11px">${t.dicatatOleh||'—'}</td>
+    <td>
+      <button class="btn btn-danger" style="padding:4px 8px" onclick="hapusTrx('${t.id}')">
+        <i class="ti ti-trash"></i>
+      </button>
+    </td>
+  </tr>`).join('');
+}
+
+window.filterTransaksi = function() {
+  const worker  = document.getElementById('filterWorker').value;
+  const perihal = document.getElementById('filterPerihal').value;
+  const filtered = allTransaksi.filter(t =>
+    (!worker  || t.nama === worker) &&
+    (!perihal || t.perihal === perihal)
+  );
+  renderLogTransaksi(filtered);
+};
+
+// ── RENDER REKAP ─────────────────────────────────────────────
+function renderRekap() {
+  const tbody = document.getElementById('rekapBody');
+  if (allRekap.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="ti ti-chart-bar"></i><p>Belum ada data rekap</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allRekap.map(w => {
+    const bersih = w.gajiBersih || 0;
+    const color  = bersih >= 0 ? 'positive' : 'negative';
+    return `
+    <tr>
+      <td>
+        <div class="rekap-name">
+          <div class="rekap-avatar">${initials(w.nama)}</div>
+          ${w.nama}
+        </div>
+      </td>
+      <td style="text-align:right" class="mono">${rp(w.totalTrx)}</td>
+      <td style="text-align:right" class="mono">${rp(w.gajiKotor)}</td>
+      <td style="text-align:right" class="mono ${w.kasbon>0?'negative':''}">${w.kasbon>0?rp(w.kasbon):'—'}</td>
+      <td style="text-align:right" class="mono ${color}">${rp(bersih)}</td>
+      <td>
+        <span class="badge ${w.statusKirim==='Sudah Kirim'?'badge-ok':'badge-warn'}">
+          ${w.statusKirim||'Belum Kirim'}
+        </span>
+      </td>
+      <td>
+        <button class="btn btn-success" style="padding:4px 10px;font-size:11px" onclick="kirimWA('${w.nama}',${bersih})">
+          <i class="ti ti-brand-whatsapp"></i>WA
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── RENDER KASBON ─────────────────────────────────────────────
+function renderKasbon() {
+  const tbody = document.getElementById('kasbonBody');
+  if (allKasbon.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="ti ti-credit-card"></i><p>Belum ada data kasbon</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allKasbon.map(k => `
+  <tr>
+    <td class="mono" style="color:var(--cyan);font-size:11px">${k.id}</td>
+    <td style="font-weight:600">${k.nama}</td>
+    <td style="text-align:right" class="mono">${rp(k.jumlah)}</td>
+    <td class="mono" style="color:var(--text3);font-size:11px">${k.tanggal}</td>
+    <td style="color:var(--text2);font-size:11px">${k.keterangan||'—'}</td>
+    <td><span class="badge ${k.status==='Aktif'?'badge-warn':'badge-ok'}">${k.status}</span></td>
+    <td style="color:var(--text3);font-size:11px">${k.periodePotong||'—'}</td>
+    <td style="text-align:right" class="mono">${rp(k.sisa)}</td>
+    <td style="color:var(--text2);font-size:11px">${k.dicatatOleh||'—'}</td>
+  </tr>`).join('');
+}
+
+// ── RENDER WORKERS ────────────────────────────────────────────
+function renderWorkers() {
+  const tbody = document.getElementById('workersBody');
+  if (allWorkers.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="ti ti-users"></i><p>Belum ada worker</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allWorkers.map(w => `
+  <tr>
+    <td class="mono" style="color:var(--cyan);font-size:11px">${w.id}</td>
+    <td><div style="display:flex;align-items:center;gap:8px"><div class="rekap-avatar">${initials(w.nama)}</div><span style="font-weight:600">${w.nama}</span></div></td>
+    <td class="mono" style="color:var(--text2);font-size:11px">${w.nomorWa||'—'}</td>
+    <td style="color:var(--text2);font-size:11px">${w.username||'—'}</td>
+    <td><span class="badge ${w.status==='Aktif'?'badge-ok':'badge-danger'}">${w.status||'—'}</span></td>
+    <td style="text-align:right" class="mono ${w.kasbonAktif>0?'negative':''}">${w.kasbonAktif>0?rp(w.kasbonAktif):'—'}</td>
+    <td class="mono" style="color:var(--text3);font-size:11px">${w.tglBergabung||'—'}</td>
+    <td>
+      <div style="display:flex;gap:4px">
+        <button class="btn" style="padding:4px 8px" title="Edit"><i class="ti ti-edit"></i></button>
+        <button class="btn" style="padding:4px 8px" title="Reset Password"><i class="ti ti-key"></i></button>
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+// ── RENDER SLIP ───────────────────────────────────────────────
+function renderSlip() {
+  const tbody = document.getElementById('slipBody');
+  if (allRekap.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ti ti-receipt"></i><p>Belum ada data rekap</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allRekap.map(w => `
+  <tr>
+    <td><div style="display:flex;align-items:center;gap:8px"><div class="rekap-avatar">${initials(w.nama)}</div><span style="font-weight:600">${w.nama}</span></div></td>
+    <td style="color:var(--text2);font-size:11px">—</td>
+    <td style="text-align:right;font-weight:600" class="positive">${rp(w.gajiBersih)}</td>
+    <td><span class="badge ${w.statusKirim==='Sudah Kirim'?'badge-ok':'badge-warn'}">${w.statusKirim||'Belum Kirim'}</span></td>
+    <td>
+      <div style="display:flex;gap:5px">
+        <button class="btn" style="padding:4px 10px;font-size:11px" onclick="previewSlip('${w.nama}')">
+          <i class="ti ti-eye"></i>Preview
+        </button>
+        <button class="btn btn-success" style="padding:4px 10px;font-size:11px" onclick="kirimWA('${w.nama}',${w.gajiBersih||0})">
+          <i class="ti ti-brand-whatsapp"></i>WA
+        </button>
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+// ── RENDER ARSIP ─────────────────────────────────────────────
+async function loadArsip() {
+  const snap = await getDocs(query(collection(db,'arsip'), orderBy('tglTutup','desc')));
+  const data  = snap.docs.map(d=>({id:d.id,...d.data()}));
+  const tbody = document.getElementById('arsipBody');
+  if (data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="ti ti-archive"></i><p>Belum ada arsip</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(a => `
+  <tr>
+    <td style="font-weight:600">${a.periode}</td>
+    <td class="mono" style="color:var(--text3);font-size:11px">${a.tglTutup}</td>
+    <td style="text-align:right" class="mono positive">${rp(a.totalIN)}</td>
+    <td style="text-align:right" class="mono">${rp(a.kantor20)}</td>
+    <td style="text-align:right" class="mono">${rp(a.laba30)}</td>
+    <td style="text-align:right" class="mono">${rp(a.worker50)}</td>
+    <td style="text-align:center">${a.jmlTrx}</td>
+    <td style="color:var(--text2)">${a.ditutupOleh||'—'}</td>
+  </tr>`).join('');
+}
+
+// ── NOTIFIKASI ───────────────────────────────────────────────
+function listenNotifikasi() {
+  if (unsubNotif) unsubNotif();
+  const q = query(collection(db,'notifikasi'), orderBy('timestamp','desc'), limit(50));
+  unsubNotif = onSnapshot(q, snap => {
+    allNotif = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const unread = allNotif.filter(n=>!n.dibaca).length;
+
+    // Update bell badge
+    const dot   = document.getElementById('notifDot');
+    const count = document.getElementById('notifCount');
+    dot.style.display   = unread > 0 ? 'block' : 'none';
+    count.style.display = unread > 0 ? 'flex'  : 'none';
+    count.textContent   = unread;
+
+    renderNotifPanel();
+    renderNotifPage();
+  });
+}
+
+function notifItemHTML(n) {
+  const tipeColor = {info:'var(--cyan)',success:'var(--success)',warning:'var(--warning)',danger:'var(--danger)'};
+  return `
+  <div class="notif-item ${!n.dibaca?'unread':''}" onclick="readNotif('${n.id}')">
+    <div class="notif-item-title" style="color:${tipeColor[n.tipe]||'var(--cyan)'}">${n.judul}</div>
+    <div class="notif-item-msg">${n.pesan}</div>
+    <div class="notif-item-time">${n.waktu}</div>
+  </div>`;
+}
+
+function renderNotifPanel() {
+  const list = document.getElementById('notifList');
+  list.innerHTML = allNotif.length === 0
+    ? `<div class="notif-empty"><i class="ti ti-bell-off"></i><br>Belum ada notifikasi</div>`
+    : allNotif.slice(0,8).map(notifItemHTML).join('');
+}
+
+function renderNotifPage() {
+  const el = document.getElementById('notifFullList');
+  el.innerHTML = allNotif.length === 0
+    ? `<div class="notif-empty"><i class="ti ti-bell-off"></i><p>Belum ada notifikasi</p></div>`
+    : allNotif.map(n => `
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border2);${!n.dibaca?'border-left:2px solid var(--cyan)':''}" onclick="readNotif('${n.id}')">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:600;color:${n.tipe==='success'?'var(--success)':n.tipe==='warning'?'var(--warning)':n.tipe==='danger'?'var(--danger)':'var(--cyan)'}">${n.judul}</span>
+          <span style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">${n.waktu}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2)">${n.pesan}</div>
+        ${!n.dibaca?`<span class="badge badge-gold" style="margin-top:6px">Baru</span>`:''}
+      </div>`).join('');
+}
+
+window.readNotif = async function(id) {
+  await updateDoc(doc(db,'notifikasi',id),{dibaca:true});
+};
+
+window.markAllRead = async function() {
+  const unread = allNotif.filter(n=>!n.dibaca);
+  await Promise.all(unread.map(n => updateDoc(doc(db,'notifikasi',n.id),{dibaca:true})));
+};
+
+window.toggleNotif = function() {
+  document.getElementById('notifPanel').classList.toggle('show');
+};
+document.addEventListener('click', e => {
+  if (!e.target.closest('#notifPanel') && !e.target.closest('#notifBtn')) {
+    document.getElementById('notifPanel').classList.remove('show');
+  }
+});
+
+// ── INPUT TRANSAKSI ───────────────────────────────────────────
+window.hitungTotal = function() {
+  const qty  = Number(document.getElementById('trx-qty').value  || 0);
+  const rate = Number(document.getElementById('trx-rate').value || 0);
+  document.getElementById('trx-total').value = qty > 0 ? qty * rate : rate;
+};
+
+window.resetFormTrx = function() {
+  ['trx-worker','trx-perihal','trx-ket'].forEach(id => document.getElementById(id).value='');
+  ['trx-qty','trx-rate','trx-total'].forEach(id => document.getElementById(id).value=0);
+  document.getElementById('trx-tanggal').value = today();
+  document.getElementById('trx-bayar').checked = false;
+};
+
+window.submitTransaksi = async function() {
+  const tanggal    = document.getElementById('trx-tanggal').value;
+  const nama       = document.getElementById('trx-worker').value;
+  const perihal    = document.getElementById('trx-perihal').value;
+  const qty        = Number(document.getElementById('trx-qty').value  || 0);
+  const rate       = Number(document.getElementById('trx-rate').value || 0);
+  const total      = Number(document.getElementById('trx-total').value|| 0);
+  const ket        = document.getElementById('trx-ket').value;
+  const bayar      = document.getElementById('trx-bayar').checked;
+  const dicatatOleh= document.getElementById('trx-oleh').value;
+
+  if (!tanggal||!nama||!perihal||!rate) {
+    alert("Lengkapi: Tanggal, Worker, Perihal, dan Rate!"); return;
+  }
+
+  // Generate kode otomatis
+  const kode = 'CLT' + String(allTransaksi.length + 1).padStart(3,'0');
+
+  try {
+    await setDoc(doc(db,'transaksi',kode), {
+      kode, tanggal, nama, perihal,
+      quantity: qty, rate, total,
+      keterangan: ket, sudahBayar: bayar,
+      dicatatOleh, periode:'aktif',
+      createdAt: serverTimestamp()
+    });
+
+    // Update rekap worker
+    const rekapRef = doc(db,'rekap',nama);
+    const rekapDoc = await getDoc(rekapRef);
+    const existing = rekapDoc.exists() ? rekapDoc.data() : {totalTrx:0,kasbon:0};
+    const newTotal  = (existing.totalTrx||0) + total;
+    const kasbon    = existing.kasbon || 0;
+    await setDoc(rekapRef, {
+      nama, totalTrx: newTotal,
+      gajiKotor:  newTotal * 0.50,
+      kasbon,
+      gajiBersih: Math.max(0, newTotal*0.50 - kasbon),
+      kantor:     newTotal * 0.20,
+      laba:       newTotal * 0.30,
+      statusKirim: existing.statusKirim || 'Belum Kirim'
+    }, {merge:true});
+
+    alert(`✅ Transaksi ${kode} berhasil disimpan!`);
+    resetFormTrx();
+    await loadAll();
+    showPage('log-transaksi');
+
+  } catch(e) {
+    alert("❌ Gagal simpan: " + e.message);
+  }
+};
+
+// ── TOGGLE BAYAR ─────────────────────────────────────────────
+window.toggleBayar = async function(id, current) {
+  await updateDoc(doc(db,'transaksi',id),{sudahBayar:!current});
+  await loadTransaksi();
+};
+
+// ── HAPUS TRANSAKSI ───────────────────────────────────────────
+window.hapusTrx = async function(id) {
+  if (!confirm('Hapus transaksi ini?')) return;
+  await deleteDoc(doc(db,'transaksi',id));
+  await loadAll();
+};
+
+// ── KASBON ────────────────────────────────────────────────────
+window.showAddKasbon   = () => document.getElementById('addKasbonForm').style.display='block';
+window.hideAddKasbon   = () => document.getElementById('addKasbonForm').style.display='none';
+
+window.submitKasbon = async function() {
+  const nama   = document.getElementById('kb-worker').value;
+  const jumlah = Number(document.getElementById('kb-jumlah').value||0);
+  const tgl    = document.getElementById('kb-tanggal').value;
+  const ket    = document.getElementById('kb-ket').value;
+  const oleh   = document.getElementById('kb-oleh').value;
+  if (!nama||!jumlah) { alert('Lengkapi nama worker dan jumlah!'); return; }
+
+  const id = 'KB' + String(allKasbon.length+1).padStart(3,'0');
+  await setDoc(doc(db,'kasbon',id),{
+    id, nama, jumlah, tanggal:tgl,
+    keterangan:ket, status:'Aktif',
+    periodePotong:'-', sisa:jumlah, dicatatOleh:oleh
+  });
+  alert('✅ Kasbon berhasil ditambahkan!');
+  hideAddKasbon();
+  await loadKasbon();
+};
+
+// ── LOG KANTOR ────────────────────────────────────────────────
+window.showAddLogKantor = () => document.getElementById('addLogKantorForm').style.display='block';
+window.hideAddLogKantor = () => document.getElementById('addLogKantorForm').style.display='none';
+
+window.submitLogKantor = async function() {
+  const tgl      = document.getElementById('lk-tanggal').value;
+  const kategori = document.getElementById('lk-kategori').value;
+  const jumlah   = Number(document.getElementById('lk-jumlah').value||0);
+  const ket      = document.getElementById('lk-ket').value;
+  const bukti    = document.getElementById('lk-bukti').value;
+  const oleh     = document.getElementById('lk-oleh').value;
+  if (!tgl||!kategori||!jumlah) { alert('Lengkapi tanggal, kategori, dan jumlah!'); return; }
+
+  const snap = await getDocs(collection(db,'logKantor'));
+  const id = 'LK' + String(snap.size+1).padStart(3,'0');
+  await setDoc(doc(db,'logKantor',id),{
+    id, tanggal:tgl, kategori, jumlah, keterangan:ket,
+    bukti, dicatatOleh:oleh, periode:'Periode Ini'
+  });
+  alert('✅ Pengeluaran berhasil dicatat!');
+  hideAddLogKantor();
+
+  // Reload log kantor
+  const snap2 = await getDocs(collection(db,'logKantor'));
+  const data   = snap2.docs.map(d=>({id:d.id,...d.data()}));
+  const tbody  = document.getElementById('logKantorBody');
+  tbody.innerHTML = data.map(lk => `
+  <tr>
+    <td class="mono" style="color:var(--cyan);font-size:11px">${lk.id}</td>
+    <td class="mono" style="color:var(--text3);font-size:11px">${lk.tanggal}</td>
+    <td>${lk.kategori}</td>
+    <td style="text-align:right" class="mono">${rp(lk.jumlah)}</td>
+    <td style="color:var(--text2);font-size:11px">${lk.keterangan||'—'}</td>
+    <td><span class="badge ${lk.bukti==='Ada'?'badge-ok':'badge-warn'}">${lk.bukti}</span></td>
+    <td style="color:var(--text2);font-size:11px">${lk.dicatatOleh}</td>
+  </tr>`).join('');
+};
+
+// ── KIRIM WA ─────────────────────────────────────────────────
+window.kirimWA = function(nama, gajiBersih) {
+  const worker = allWorkers.find(w => w.nama===nama);
+  const wa     = worker?.nomorWa || '';
+  if (!wa) { alert('Nomor WA worker tidak ditemukan!'); return; }
+
+  const periode = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const rekap   = allRekap.find(r=>r.nama===nama) || {};
+  const msg = encodeURIComponent(
+`Halo ${nama}! 👋
+
+📋 *SLIP GAJI LUCI TEAM*
+Periode: ${periode}
+
+💰 Total Transaksi : ${rp(rekap.totalTrx||0)}
+📊 Gaji Kotor 50%  : ${rp(rekap.gajiKotor||0)}
+💸 Potongan Kasbon : ${rp(rekap.kasbon||0)}
+━━━━━━━━━━━━━━━━━
+✅ *GAJI BERSIH : ${rp(gajiBersih)}*
+
+Harap simpan pesan ini sebagai bukti gaji.
+_Tim Admin LUCI TEAM_`
+  );
+  window.open(`https://wa.me/${wa}?text=${msg}`, '_blank');
+
+  // Update status kirim
+  updateDoc(doc(db,'rekap',nama),{statusKirim:'Sudah Kirim'});
+  loadRekap();
+};
+
+// ── PREVIEW SLIP ─────────────────────────────────────────────
+window.previewSlip = function(nama) {
+  const w = allRekap.find(r=>r.nama===nama) || {};
+  const periode = new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  alert(
+`══════════════════════════
+   SLIP GAJI LUCI TEAM
+══════════════════════════
+Nama   : ${nama}
+Periode: ${periode}
+──────────────────────────
+Total Transaksi : ${rp(w.totalTrx)}
+Gaji Kotor 50%  : ${rp(w.gajiKotor)}
+Potongan Kasbon : ${rp(w.kasbon)}
+══════════════════════════
+GAJI BERSIH : ${rp(w.gajiBersih)}
+══════════════════════════`
+  );
+};
+
+// ── TUTUP BUKU ────────────────────────────────────────────────
+window.openPinModal  = () => { document.getElementById('pinModal').classList.add('show'); document.getElementById('pin1').focus(); };
+window.closePinModal = () => {
+  document.getElementById('pinModal').classList.remove('show');
+  ['pin1','pin2','pin3','pin4'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('pinError').classList.remove('show');
+};
+
+window.pinNext = function(el, nextId) {
+  if (el.value && nextId) document.getElementById(nextId).focus();
+};
+window.pinPrev = function(e, el, prevId) {
+  if (e.key==='Backspace' && !el.value) document.getElementById(prevId)?.focus();
+};
+
+window.submitPin = async function() {
+  const pin = ['pin1','pin2','pin3','pin4'].map(id=>document.getElementById(id).value).join('');
+  // Ambil PIN dari Firestore config (atau hardcode sementara)
+  const configDoc = await getDoc(doc(db,'config','sistem'));
+  const pinBenar  = configDoc.exists() ? configDoc.data().pinTutupBuku : '1234';
+
+  if (pin !== pinBenar) {
+    document.getElementById('pinError').classList.add('show');
+    ['pin1','pin2','pin3','pin4'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('pin1').focus();
+    return;
+  }
+  closePinModal();
+  await prosesTutupBuku();
+};
+
+async function prosesTutupBuku() {
+  if (allTransaksi.length === 0) { alert('⚠️ Tidak ada transaksi untuk diarsipkan.'); return; }
+
+  const periode  = 'Minggu ' + new Date().toLocaleDateString('id-ID');
+  const tglTutup = nowStr();
+  const totalIN  = allTransaksi.reduce((s,t)=>s+(t.total||0),0);
+  const arsipId  = 'arsip_' + Date.now();
+
+  try {
+    // Simpan ke arsip
+    await setDoc(doc(db,'arsip',arsipId), {
+      periode, tglTutup, totalIN,
+      kantor20:  totalIN*0.20,
+      laba30:    totalIN*0.30,
+      worker50:  totalIN*0.50,
+      jmlTrx:    allTransaksi.length,
+      ditutupOleh: currentUser?.nama || 'Admin'
+    });
+
+    // Simpan detail transaksi ke sub-collection
+    await Promise.all(allTransaksi.map(t =>
+      addDoc(collection(db,`arsip/${arsipId}/transaksi`), t)
+    ));
+
+    // Hapus semua transaksi aktif
+    await Promise.all(allTransaksi.map(t => deleteDoc(doc(db,'transaksi',t.id))));
+
+    // Update kasbon Aktif → Lunas
+    const kasbonAktif = allKasbon.filter(k=>k.status==='Aktif');
+    await Promise.all(kasbonAktif.map(k =>
+      updateDoc(doc(db,'kasbon',k.id),{status:'Lunas',periodePotong:periode,sisa:0})
+    ));
+
+    // Reset rekap
+    await Promise.all(allRekap.map(w =>
+      setDoc(doc(db,'rekap',w.nama),{
+        nama:w.nama, totalTrx:0, gajiKotor:0,
+        kasbon:0, gajiBersih:0, kantor:0, laba:0,
+        statusKirim:'Belum Kirim'
+      })
+    ));
+
+    // Tambah notifikasi
+    await addDoc(collection(db,'notifikasi'),{
+      judul: '📦 Tutup Buku Selesai',
+      pesan: `${periode} berhasil diarsipkan. Total: ${rp(totalIN)} | ${allTransaksi.length} transaksi.`,
+      tipe: 'success', waktu: nowStr(), dibaca: false,
+      timestamp: new Date().toISOString()
+    });
+
+    await loadAll();
+    alert(`✅ TUTUP BUKU SELESAI!\n\nPeriode: ${periode}\nTotal IN: ${rp(totalIN)}\nTransaksi: ${allTransaksi.length}`);
+
+  } catch(e) {
+    alert('❌ Error tutup buku: ' + e.message);
+  }
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+const pageTitles = {
+  'dashboard':'Dashboard','input-transaksi':'Input Transaksi',
+  'log-transaksi':'Log Transaksi','rekap':'Rekap Mingguan',
+  'slip-gaji':'Slip Gaji','kasbon':'Kasbon',
+  'workers':'Manajemen Worker','log-kantor':'Log Kantor',
+  'arsip':'Arsip','notifikasi':'Notifikasi','settings':'Advanced Settings'
+};
+
+window.showPage = function(pageId) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  const page = document.getElementById('page-'+pageId);
+  const nav  = document.getElementById('nav-'+pageId);
+  if (page) page.classList.add('active');
+  if (nav)  nav.classList.add('active');
+  document.getElementById('pageTitle').textContent = pageTitles[pageId] || pageId;
+  document.getElementById('notifPanel').classList.remove('show');
+  closeSidebar();
+
+  // Lazy load arsip
+  if (pageId === 'arsip') loadArsip();
+  if (pageId === 'log-kantor') loadLogKantor();
+};
+
+async function loadLogKantor() {
+  const snap = await getDocs(collection(db,'logKantor'));
+  const data  = snap.docs.map(d=>({id:d.id,...d.data()}));
+  const tbody = document.getElementById('logKantorBody');
+  if (data.length===0) {
+    tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><i class="ti ti-building"></i><p>Belum ada pengeluaran</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(lk => `
+  <tr>
+    <td class="mono" style="color:var(--cyan);font-size:11px">${lk.id}</td>
+    <td class="mono" style="color:var(--text3);font-size:11px">${lk.tanggal}</td>
+    <td>${lk.kategori}</td>
+    <td style="text-align:right" class="mono">${rp(lk.jumlah)}</td>
+    <td style="color:var(--text2);font-size:11px">${lk.keterangan||'—'}</td>
+    <td><span class="badge ${lk.bukti==='Ada'?'badge-ok':'badge-warn'}">${lk.bukti}</span></td>
+    <td style="color:var(--text2);font-size:11px">${lk.dicatatOleh}</td>
+  </tr>`).join('');
+}
+
+// ── SIDEBAR MOBILE ────────────────────────────────────────────
+window.toggleSidebar = function() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOverlay').classList.toggle('show');
+};
+window.closeSidebar = function() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('show');
+};
+
+// ── LOGOUT ────────────────────────────────────────────────────
+window.logout = async function() {
+  if (!confirm('Keluar dari LUCI TEAM?')) return;
+  if (unsubNotif) unsubNotif();
+  await signOut(auth);
+  window.location.href = 'luci-login.html';
+};
+
+// ── GANTI PIN ─────────────────────────────────────────────────
+window.gantiPIN = async function() {
+  const lama = document.getElementById('pinLama').value;
+  const baru = document.getElementById('pinBaru').value;
+  if (!lama||!baru) { alert('Isi PIN lama dan PIN baru!'); return; }
+  if (baru.length !== 4 || !/^\d+$/.test(baru)) { alert('PIN harus 4 digit angka!'); return; }
+
+  const configDoc = await getDoc(doc(db,'config','sistem'));
+  const pinBenar  = configDoc.exists() ? configDoc.data().pinTutupBuku : '1234';
+  if (lama !== pinBenar) { alert('PIN lama salah!'); return; }
+
+  await setDoc(doc(db,'config','sistem'),{pinTutupBuku:baru},{merge:true});
+  alert('✅ PIN berhasil diganti!');
+  document.getElementById('pinLama').value='';
+  document.getElementById('pinBaru').value='';
+};
+
+</script>
+</body>
+</html>
