@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUCI TEAM — Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #050D1A;
+    --navy2:   #0A1628;
+    --navy3:   #0F1E35;
+    --cyan:    #00D4FF;
+    --cyan2:   #0099CC;
+    --cyan3:   #006699;
+    --white:   #FFFFFF;
+    --text:    rgba(255,255,255,0.85);
+    --text2:   rgba(255,255,255,0.45);
+    --text3:   rgba(255,255,255,0.22);
+    --border:  rgba(0,212,255,0.12);
+    --border2: rgba(255,255,255,0.07);
+    --error:   #FF6B6B;
+    --success: #34D399;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--navy);
+    font-family: 'Syne', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  .bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: var(--navy);
+  }
+  .bg-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .bg-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .bg-glow-1 {
+    width: 600px; height: 600px;
+    background: rgba(0,212,255,0.06);
+    top: -200px; left: -100px;
+    animation: glow-drift 8s ease-in-out infinite alternate;
+  }
+  .bg-glow-2 {
+    width: 400px; height: 400px;
+    background: rgba(0,153,204,0.05);
+    bottom: -100px; right: -50px;
+    animation: glow-drift 10s ease-in-out infinite alternate-reverse;
+  }
+  .bg-glow-3 {
+    width: 200px; height: 200px;
+    background: rgba(0,212,255,0.08);
+    top: 50%; left: 60%;
+    transform: translate(-50%,-50%);
+    animation: pulse-glow 4s ease-in-out infinite;
+  }
+  @keyframes glow-drift {
+    from { transform: translate(0,0) scale(1); }
+    to   { transform: translate(40px,30px) scale(1.1); }
+  }
+  @keyframes pulse-glow {
+    0%,100% { opacity: 0.4; transform: translate(-50%,-50%) scale(1); }
+    50%      { opacity: 0.8; transform: translate(-50%,-50%) scale(1.2); }
+  }
+
+  /* ── LAYOUT ── */
+  .page {
+    position: relative; z-index: 1;
+    display: flex; height: 100vh;
+  }
+
+  /* LEFT PANEL */
+  .left {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; padding: 60px;
+    border-right: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .left-top {
+    position: absolute; top: 40px; left: 60px;
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0; animation: fade-up 0.6s ease 0.2s forwards;
+  }
+  .logo-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { box-shadow: 0 0 6px var(--cyan); }
+    50%      { box-shadow: 0 0 18px var(--cyan), 0 0 30px rgba(0,212,255,0.3); }
+  }
+  .logo-label {
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--cyan);
+    font-weight: 600;
+  }
+
+  .left-content {
+    opacity: 0; animation: fade-up 0.7s ease 0.4s forwards;
+  }
+  .left-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--cyan);
+    letter-spacing: 2px; margin-bottom: 20px;
+  }
+  .left-title {
+    font-size: clamp(36px,4vw,56px);
+    font-weight: 800; line-height: 1.05;
+    color: var(--white);
+    margin-bottom: 20px;
+  }
+  .left-title span {
+    background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .left-desc {
+    font-size: 14px; color: var(--text2);
+    line-height: 1.7; max-width: 380px;
+    margin-bottom: 40px;
+  }
+
+  .stats-row {
+    display: flex; gap: 28px;
+    opacity: 0; animation: fade-up 0.7s ease 0.7s forwards;
+  }
+  .stat-item { }
+  .stat-val {
+    font-size: 24px; font-weight: 700; color: var(--white);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-lbl {
+    font-size: 11px; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 1px; margin-top: 2px;
+  }
+  .stat-div {
+    width: 1px; background: var(--border2);
+    align-self: stretch; margin: 4px 0;
+  }
+
+  .scanline {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    animation: scan 3s ease-in-out infinite;
+    opacity: 0.5;
+  }
+  @keyframes scan {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* RIGHT PANEL */
+  .right {
+    width: 480px; display: flex; flex-direction: column;
+    justify-content: center; padding: 60px 50px;
+    background: rgba(10,22,40,0.6);
+    backdrop-filter: blur(20px);
+  }
+
+  .form-header {
+    margin-bottom: 36px;
+    opacity: 0; animation: fade-up 0.6s ease 0.3s forwards;
+  }
+  .form-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--cyan);
+    letter-spacing: 2px; margin-bottom: 10px;
+  }
+  .form-title {
+    font-size: 26px; font-weight: 700; color: var(--white);
+    margin-bottom: 6px;
+  }
+  .form-sub {
+    font-size: 13px; color: var(--text2);
+  }
+
+  /* ROLE TOGGLE */
+  .role-toggle {
+    display: flex; gap: 6px;
+    background: var(--navy3);
+    border: 1px solid var(--border2);
+    border-radius: 10px; padding: 5px;
+    margin-bottom: 28px;
+    opacity: 0; animation: fade-up 0.6s ease 0.45s forwards;
+  }
+  .role-btn {
+    flex: 1; padding: 9px;
+    border-radius: 7px; border: none;
+    background: transparent;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px; font-weight: 500;
+    color: var(--text2); cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .role-btn svg { width: 14px; height: 14px; }
+  .role-btn.active {
+    background: rgba(0,212,255,0.12);
+    color: var(--cyan);
+    border: 1px solid rgba(0,212,255,0.25);
+  }
+  .role-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.04); }
+
+  /* FORM */
+  .form { opacity: 0; animation: fade-up 0.6s ease 0.55s forwards; }
+
+  .field { margin-bottom: 18px; }
+  .field-label {
+    display: block; font-size: 11px;
+    color: var(--text2); letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .field-wrap { position: relative; }
+  .field-icon {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3); pointer-events: none;
+    display: flex; align-items: center;
+  }
+  .field-icon svg { width: 16px; height: 16px; }
+  .field-input {
+    width: 100%; padding: 13px 14px 13px 42px;
+    background: var(--navy3);
+    border: 1px solid var(--border2);
+    border-radius: 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--text);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .field-input::placeholder { color: var(--text3); }
+  .field-input:focus {
+    border-color: rgba(0,212,255,0.35);
+    background: rgba(15,30,53,0.8);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.06);
+  }
+  .field-input.err { border-color: rgba(255,107,107,0.4); }
+
+  .pass-toggle {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    color: var(--text3); cursor: pointer;
+    display: flex; align-items: center;
+    transition: color 0.2s;
+  }
+  .pass-toggle:hover { color: var(--cyan); }
+  .pass-toggle svg { width: 16px; height: 16px; }
+
+  /* ERROR */
+  .error-box {
+    background: rgba(255,107,107,0.08);
+    border: 1px solid rgba(255,107,107,0.2);
+    border-radius: 8px; padding: 11px 14px;
+    margin-bottom: 18px;
+    display: none; align-items: center; gap: 9px;
+    font-size: 12px; color: var(--error);
+  }
+  .error-box.show { display: flex; }
+  .error-box svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* SUBMIT BTN */
+  .btn-submit {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, var(--cyan), var(--cyan2));
+    border: none; border-radius: 9px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: var(--navy); cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative; overflow: hidden;
+    margin-top: 6px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-submit::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,212,255,0.3); }
+  .btn-submit:hover::before { opacity: 1; }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-submit svg { width: 16px; height: 16px; }
+
+  /* SPINNER */
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(5,13,26,0.3);
+    border-top-color: var(--navy);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* FOOTER */
+  .form-footer {
+    margin-top: 28px; text-align: center;
+    opacity: 0; animation: fade-up 0.6s ease 0.7s forwards;
+  }
+  .form-footer p {
+    font-size: 11px; color: var(--text3);
+    line-height: 1.6;
+  }
+  .version-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text3);
+  }
+  .version-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--cyan); opacity: 0.5;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .left { display: none; }
+    .right {
+      width: 100%; padding: 40px 28px;
+      background: var(--navy);
+    }
+    .form-header { margin-bottom: 28px; }
+  }
+
+  /* SUCCESS STATE */
+  .success-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .success-overlay.show { opacity: 1; pointer-events: all; }
+  .success-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(52,211,153,0.1);
+    border: 1px solid rgba(52,211,153,0.3);
+    display: flex; align-items: center; justify-content: center;
+    animation: pop 0.4s ease;
+  }
+  @keyframes pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .success-icon svg { width: 28px; height: 28px; color: var(--success); }
+  .success-text { font-size: 18px; font-weight: 600; color: var(--white); }
+  .success-sub { font-size: 13px; color: var(--text2); }
+  .redirect-bar {
+    width: 160px; height: 2px;
+    background: var(--navy3); border-radius: 2px; overflow: hidden;
+  }
+  .redirect-fill {
+    height: 100%; background: var(--cyan);
+    animation: fill-bar 1.8s ease forwards;
+  }
+  @keyframes fill-bar { from { width: 0; } to { width: 100%; } }
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="bg">
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  </div>
+  <div class="success-text" id="successName">Selamat datang!</div>
+  <div class="success-sub" id="successRole">Mengalihkan ke dashboard...</div>
+  <div class="redirect-bar"><div class="redirect-fill"></div></div>
+</div>
+
+<!-- MAIN PAGE -->
+<div class="page">
+
+  <!-- LEFT PANEL -->
+  <div class="left">
+    <div class="left-top">
+      <div class="logo-dot"></div>
+      <div class="logo-label">Luci Boost · Management System</div>
+    </div>
+
+    <div class="left-content">
+      <div class="left-tag">// sistem pendataan internal</div>
+      <h1 class="left-title">LUCI<br><span>TEAM</span></h1>
+      <p class="left-desc">
+        Platform manajemen operasional terpusat untuk tim LUCI Boost.
+        Kelola transaksi, pantau performa worker, dan proses penggajian
+        dalam satu sistem yang terintegrasi.
+      </p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-val" id="counterTrx">0</div>
+        <div class="stat-lbl">Transaksi</div>
+      </div>
+      <div class="stat-div"></div>
+      <div class="stat-item">
+        <div class="stat-val" id="counterWorker">0</div>
+        <div class="stat-lbl">Worker Aktif</div>
+      </div>
+      <div class="stat-div"></div>
+      <div class="stat-item">
+        <div class="stat-val" id="counterWeek">0</div>
+        <div class="stat-lbl">Periode Arsip</div>
+      </div>
+    </div>
+
+    <div class="scanline"></div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right">
+    <div class="form-header">
+      <div class="form-tag">// masuk ke sistem</div>
+      <div class="form-title">Selamat Datang</div>
+      <div class="form-sub">Masuk menggunakan akun yang telah terdaftar</div>
+    </div>
+
+    <!-- ROLE TOGGLE -->
+    <div class="role-toggle">
+      <button class="role-btn active" id="roleAdmin" onclick="setRole('admin')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Admin
+      </button>
+      <button class="role-btn" id="roleWorker" onclick="setRole('worker')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        Worker
+      </button>
+    </div>
+
+    <!-- FORM -->
+    <form class="form" id="loginForm" onsubmit="handleLogin(event)">
+
+      <div class="error-box" id="errorBox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="errorMsg">Username atau password salah.</span>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="username">Username</label>
+        <div class="field-wrap">
+          <span class="field-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </span>
+          <input type="text" id="username" class="field-input"
+            placeholder="masukkan username" autocomplete="username" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="password">Password</label>
+        <div class="field-wrap">
+          <span class="field-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input type="password" id="password" class="field-input"
+            placeholder="••••••••" autocomplete="current-password" required>
+          <button type="button" class="pass-toggle" onclick="togglePass()" id="passToggle">
+            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <div class="spinner" id="spinner"></div>
+        <span id="btnText">Masuk</span>
+        <svg id="btnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+    </form>
+
+    <div class="form-footer">
+      <p>Lupa password? Hubungi Admin untuk reset akun kamu.</p>
+      <div class="version-tag">
+        <div class="version-dot"></div>
+        LUCI TEAM v1.0 · 2025
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBrlbK6F9cCVTcW5z3DzTFvFEIYLf6jIzQ",
+  authDomain: "luci-pendataan.firebaseapp.com",
+  projectId: "luci-pendataan",
+  storageBucket: "luci-pendataan.firebasestorage.app",
+  messagingSenderId: "694040300230",
+  appId: "1:694040300230:web:8070e106d500536e0325c7"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── COUNTER ANIMATION ──
+function animateCount(el, target, duration=1800) {
+  let start = null;
+  const step = ts => {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(ease * target);
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(step);
+}
+setTimeout(() => {
+  animateCount(document.getElementById('counterTrx'),    247, 2000);
+  animateCount(document.getElementById('counterWorker'),   4, 1200);
+  animateCount(document.getElementById('counterWeek'),    18, 1600);
+}, 800);
+
+// ── ROLE SELECTION ──
+let currentRole = 'admin';
+window.setRole = function(role) {
+  currentRole = role;
+  document.getElementById('roleAdmin').classList.toggle('active', role === 'admin');
+  document.getElementById('roleWorker').classList.toggle('active', role === 'worker');
+  hideError();
+};
+
+// ── PASS TOGGLE ──
+window.togglePass = function() {
+  const inp = document.getElementById('password');
+  const icon = document.getElementById('eyeIcon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+  } else {
+    inp.type = 'password';
+    icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+  }
+};
+
+function showError(msg) {
+  document.getElementById('errorMsg').textContent = msg;
+  document.getElementById('errorBox').classList.add('show');
+  document.getElementById('username').classList.add('err');
+  document.getElementById('password').classList.add('err');
+}
+function hideError() {
+  document.getElementById('errorBox').classList.remove('show');
+  document.getElementById('username').classList.remove('err');
+  document.getElementById('password').classList.remove('err');
+}
+function setLoading(on) {
+  const btn  = document.getElementById('submitBtn');
+  const spin = document.getElementById('spinner');
+  const txt  = document.getElementById('btnText');
+  const ico  = document.getElementById('btnIcon');
+  btn.disabled = on;
+  spin.style.display = on ? 'block' : 'none';
+  txt.textContent = on ? 'Memverifikasi...' : 'Masuk';
+  ico.style.display = on ? 'none' : 'block';
+}
+
+function showSuccess(name, role) {
+  const roleLabel = role === 'superadmin' ? 'Super Admin' : role === 'admin' ? 'Admin' : 'Worker';
+  document.getElementById('successName').textContent = `Selamat datang, ${name}!`;
+  document.getElementById('successRole').textContent = `Login sebagai ${roleLabel} · Mengalihkan...`;
+  document.getElementById('successOverlay').classList.add('show');
+
+  // Redirect setelah 2 detik
+  setTimeout(() => {
+    if (role === 'superadmin' || role === 'admin') {
+      window.location.href = 'luci-dashboard.html';
+    } else {
+      window.location.href = 'luci-worker.html';
+    }
+  }, 2000);
+}
+
+// ── LOGIN HANDLER ──
+window.handleLogin = async function(e) {
+  e.preventDefault();
+  hideError();
+
+  const username = document.getElementById('username').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+
+  if (!username || !password) {
+    showError('Username dan password harus diisi.');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    // Cari user di Firestore collection "users" berdasarkan username
+    const usersRef = collection(db, 'users');
+    const snapshot = await getDocs(usersRef);
+
+    let foundUser = null;
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.username && data.username.toLowerCase() === username) {
+        foundUser = { id: docSnap.id, ...data };
+      }
+    });
+
+    if (!foundUser) {
+      showError('Username tidak ditemukan. Hubungi Admin.');
+      setLoading(false);
+      return;
+    }
+
+    // Validasi role sesuai pilihan toggle
+    const isAdminRole = foundUser.role === 'admin' || foundUser.role === 'superadmin';
+    if (currentRole === 'admin' && !isAdminRole) {
+      showError('Akun ini bukan akun Admin.');
+      setLoading(false);
+      return;
+    }
+    if (currentRole === 'worker' && isAdminRole) {
+      showError('Gunakan login Admin untuk akun ini.');
+      setLoading(false);
+      return;
+    }
+
+    // Login Firebase Auth pakai email yang tersimpan di Firestore
+    await signInWithEmailAndPassword(auth, foundUser.email, password);
+
+    // Simpan session info
+    sessionStorage.setItem('luci_user', JSON.stringify({
+      username: foundUser.username,
+      nama: foundUser.nama,
+      role: foundUser.role,
+      uid: foundUser.id
+    }));
+
+    showSuccess(foundUser.nama || foundUser.username, foundUser.role);
+
+  } catch (err) {
+    console.error(err);
+    if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      showError('Password salah. Coba lagi.');
+    } else if (err.code === 'auth/too-many-requests') {
+      showError('Terlalu banyak percobaan. Coba lagi nanti.');
+    } else {
+      showError('Gagal login. Periksa koneksi internet kamu.');
+    }
+    setLoading(false);
+  }
+};
+
+// Clear error saat user mulai mengetik
+document.getElementById('username').addEventListener('input', hideError);
+document.getElementById('password').addEventListener('input', hideError);
+
+</script>
+</body>
+</html>
